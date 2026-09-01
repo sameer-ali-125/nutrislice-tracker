@@ -1,11 +1,8 @@
 import requests
 import os
-import smtplib
-from email.mime.text import MIMEText
+import resend
 from dotenv import load_dotenv
 load_dotenv()
-print("Address loaded:", os.getenv("GMAIL_ADDRESS"))
-print("Password length:", len(os.getenv("GMAIL_APP_PASSWORD") or ""))
 from datetime import date
 
 today = date.today()
@@ -78,8 +75,8 @@ for match in matches:
     print(f"- {match['food_name']} at {match['station']} ({match['meal']})")
 
 def send_email(matches):
-    gmail_address = os.getenv("GMAIL_ADDRESS")
-    gmail_app_password = os.getenv("GMAIL_APP_PASSWORD")
+    resend.api_key = os.getenv("RESEND_API_KEY")
+    destination = os.getenv("GMAIL_ADDRESS")
 
     if not matches:
         body = "No matches found today."
@@ -89,16 +86,14 @@ def send_email(matches):
             lines.append(f"- {match['food_name']} at {match['station']} ({match['meal']})")
         body = "\n".join(lines)
 
-    msg = MIMEText(body)
-    msg["Subject"] = "Nutrislice Daily Check: West Side Dining"
-    msg["From"] = gmail_address
-    msg["To"] = gmail_address
+    resend.Emails.send({
+        "from": "onboarding@resend.dev",
+        "to": destination,
+        "subject": "Nutrislice Daily Check: West Side Dining",
+        "text": body
+    })
 
-    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-        server.login(gmail_address, gmail_app_password)
-        server.send_message(msg)
-
-print("Email sent!")
+    print("Email sent!")
 
 send_email(matches)
     
