@@ -36,7 +36,7 @@ def detect_meal(station_text):
     else:
         return None
 
-search_terms = ["orzo", "orange chicken"]
+search_terms = ["orzo", "orange chicken", "pesto pizza"]
 matches = []
 current_station = None
 current_meal = "Lunch"  # default assumption when a station's meal isn't explicit
